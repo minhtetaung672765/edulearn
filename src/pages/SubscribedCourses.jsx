@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import CourseCard from '../components/CourseCard';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+// import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 export default function SubscribedCourses() {
@@ -11,14 +12,14 @@ export default function SubscribedCourses() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!user) {
+        if (!user || !localStorage.getItem('token')) {
             navigate('/login');
             return;
         }
 
         const fetchSubscribedCourses = async () => {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/my-courses/', {
+                const response = await axiosInstance.get('http://127.0.0.1:8000/api/my-courses/', {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`
                     }

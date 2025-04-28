@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
 import CourseCard from '../components/CourseCard';
+import CourseModal from '../components/CourseModal';
 
 export default function RecommendedCourses() {
     const { user } = useAuth();
@@ -12,33 +14,33 @@ export default function RecommendedCourses() {
     const [loading, setLoading] = useState(true);
     const [modalCourse, setModalCourse] = useState(null);
 
+    const fetchCourses = async () => {
+        try {
+            const recommended = await axiosInstance.get('http://127.0.0.1:8000/api/recommended-courses/', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            const subscribed = await axiosInstance.get('http://127.0.0.1:8000/api/my-courses/', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            setRecommendedCourses(recommended.data);
+            setSubscribedCourses(subscribed.data);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error fetching recommended or subscribed courses:', error);
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        if (!user) {
+        if (!user || !localStorage.getItem('token')) {
             navigate('/login');
             return;
         }
-
-        const fetchCourses = async () => {
-            try {
-                const recommended = await axios.get('http://127.0.0.1:8000/api/recommended-courses/', {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-                const subscribed = await axios.get('http://127.0.0.1:8000/api/my-courses/', {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-
-                setRecommendedCourses(recommended.data);
-                setSubscribedCourses(subscribed.data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching recommended or subscribed courses:', error);
-                setLoading(false);
-            }
-        };
 
         fetchCourses();
     }, [user, navigate]);
@@ -79,7 +81,7 @@ export default function RecommendedCourses() {
             )}
 
             {/* Modal */}
-            {modalCourse && (
+            {/* {modalCourse && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
                         <h2 className="text-xl font-bold mb-4">{modalCourse.title}</h2>
@@ -100,7 +102,7 @@ export default function RecommendedCourses() {
                             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded w-full mb-3"
                             onClick={async () => {
                                 try {
-                                    await axios.post(`http://127.0.0.1:8000/api/subscribe/${modalCourse.id}/`, {}, {
+                                    await axiosInstance.post(`http://127.0.0.1:8000/api/subscribe/${modalCourse.id}/`, {}, {
                                         headers: {
                                             Authorization: `Bearer ${localStorage.getItem('token')}`
                                         }
@@ -125,7 +127,31 @@ export default function RecommendedCourses() {
                         </button>
                     </div>
                 </div>
+            )} */}
+            {modalCourse && (
+                <CourseModal
+                    course={modalCourse}
+                    onClose={handleCloseModal}
+                    onSubscribe={async () => {
+                        try {
+                            const token = localStorage.getItem('token');
+                            await axios.post(`http://127.0.0.1:8000/api/subscribe/${modalCourse.id}/`, {}, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            });
+                            alert('Subscribed successfully!');
+                            handleCloseModal();
+                            // window.location.reload();
+                            fetchCourses(); //  Soft reload data
+                        } catch (error) {
+                            console.error('Subscription error:', error);
+                            alert('Subscription failed.');
+                        }
+                    }}
+                />
             )}
+
         </div>
     );
 }

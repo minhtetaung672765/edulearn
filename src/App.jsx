@@ -7,6 +7,8 @@ import SubscribedCourses from './pages/SubscribedCourses';
 import RecommendedCourses from './pages/RecommendedCourses';
 import CourseDetail from './pages/CourseDetail';
 import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
+import Landing from './pages/Landing.jsx';
 import LessonDetail from './pages/LessonDetail.jsx';
 
 function App() {
@@ -17,12 +19,14 @@ function App() {
         <main className="flex-grow container mx-auto px-4 py-6">
 
           <Routes>
-            <Route path="/" element={<AllCourses />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/courses" element={<AllCourses />} /> {/* After login, navigate here */}
             <Route path="/subscribed" element={<SubscribedCourses />} />
             <Route path="/recommended" element={<RecommendedCourses />} />
             <Route path="/course/:id" element={<CourseDetail />} />
             <Route path="/lesson/:id" element={<LessonDetail />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </main>
         <Footer />

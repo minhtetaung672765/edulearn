@@ -1,20 +1,31 @@
 import { useState, useEffect } from 'react';
 import CourseCard from '../components/CourseCard';
 import axios from 'axios';
+import axiosInstance from '../api/axiosInstance';
+import CourseModal from '../components/CourseModal';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function AllCourses() {
     const [courses, setCourses] = useState([]);
     const [subscribedCourses, setSubscribedCourses] = useState([]);
     const [modalCourse, setModalCourse] = useState(null);
+    const { user } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
         // Fetch all courses
-        axios.get('http://127.0.0.1:8000/api/courses/')
+        axiosInstance.get('/courses/')
             .then(response => setCourses(response.data))
             .catch(error => console.error(error));
 
         // Fetch subscribed courses
-        axios.get('http://127.0.0.1:8000/api/my-courses/', {
+        axiosInstance.get('/my-courses/', {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}` // if you store token
             }
@@ -65,7 +76,7 @@ export default function AllCourses() {
                 </div>
             )} */}
 
-            {modalCourse && (
+            {/* {modalCourse && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
                         <h2 className="text-xl font-bold mb-4">{modalCourse.title}</h2>
@@ -82,22 +93,11 @@ export default function AllCourses() {
                             )}
                         </ul>
 
-                        {/* <button
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded w-full mb-3"
-                            onClick={() => {
-                                // Subscribe logic here
-                                alert('Subscribe logic here!');
-                                handleCloseModal();
-                            }}
-                        >
-                            Subscribe Now
-                        </button> */}
-
                         <button
                             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded w-full mb-3"
                             onClick={async () => {
                                 try {
-                                    await axios.post(`http://127.0.0.1:8000/api/subscribe/${modalCourse.id}/`, {}, {
+                                    await axiosInstance.post(`/subscribe/${modalCourse.id}/`, {}, {
                                         headers: {
                                             Authorization: `Bearer ${localStorage.getItem('token')}`
                                         }
@@ -122,6 +122,28 @@ export default function AllCourses() {
                         </button>
                     </div>
                 </div>
+            )} */}
+            {modalCourse && (
+                <CourseModal
+                    course={modalCourse}
+                    onClose={handleCloseModal}
+                    onSubscribe={async () => {
+                        try {
+                            const token = localStorage.getItem('token');
+                            await axios.post(`http://127.0.0.1:8000/api/subscribe/${modalCourse.id}/`, {}, {
+                                headers: {
+                                    Authorization: `Bearer ${token}`
+                                }
+                            });
+                            alert('Subscribed successfully!');
+                            handleCloseModal();
+                            window.location.reload();
+                        } catch (error) {
+                            console.error('Subscription error:', error);
+                            alert('Subscription failed.');
+                        }
+                    }}
+                />
             )}
 
         </div>

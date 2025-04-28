@@ -10,19 +10,30 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
+    // const handleLogin = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         const response = await axios.post('http://127.0.0.1:8000/api/auth/login/', {
+    //             email,
+    //             password
+    //         });
+    //         login(response.data);  // Save user info
+    //         navigate('/');         // Go to home after login
+    //     } catch (err) {
+    //         setError('Invalid credentials. Please try again.');
+    //     }
+    // };
+
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/auth/login/', {
-                email,
-                password
-            });
-            login(response.data);  // Save user info
-            navigate('/');         // Go to home after login
+            await login(email, password);  // Correct: just call login function
+            navigate('/courses');
         } catch (err) {
             setError('Invalid credentials. Please try again.');
         }
     };
+
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">

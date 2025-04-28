@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import axiosInstance from '../api/axiosInstance';
 
 export default function CourseDetail() {
     const { id } = useParams();
@@ -19,7 +20,7 @@ export default function CourseDetail() {
 
         const fetchCourse = async () => {
             try {
-                const response = await axios.get(`http://127.0.0.1:8000/api/courses/${id}/`, {
+                const response = await axiosInstance.get(`http://127.0.0.1:8000/api/courses/${id}/`, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`
                     }
