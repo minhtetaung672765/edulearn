@@ -6,6 +6,7 @@ import AllCourses from './pages/AllCourses';
 import SubscribedCourses from './pages/SubscribedCourses';
 import RecommendedCourses from './pages/RecommendedCourses';
 import CourseDetail from './pages/CourseDetail';
+import AddCourse from './pages/AddCourse';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Landing from './pages/Landing.jsx';
@@ -25,6 +26,7 @@ function App() {
             <Route path="/recommended" element={<RecommendedCourses />} />
             <Route path="/course/:id" element={<CourseDetail />} />
             <Route path="/lesson/:id" element={<LessonDetail />} />
+            <Route path="/add-course" element={<AddCourse />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Routes>

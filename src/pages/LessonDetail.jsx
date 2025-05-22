@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../api/axiosInstance';
 import { FaCheckCircle, FaTimesCircle, FaTimes } from 'react-icons/fa';
+import { FaRobot } from 'react-icons/fa'; // Font Awesome robot icon
+
 
 export default function LessonDetail() {
     const { id } = useParams();
@@ -16,6 +18,7 @@ export default function LessonDetail() {
     const [mcqAnswers, setMcqAnswers] = useState({});
     const [mcqSubmitted, setMcqSubmitted] = useState({});
     const [showAnswers, setShowAnswers] = useState({});
+    const [generating, setGenerating] = useState(false);
 
     useEffect(() => {
         if (!user) {
@@ -42,6 +45,7 @@ export default function LessonDetail() {
     }, [id, user, navigate]);
 
     const handleGenerateQuestions = async () => {
+        setGenerating(true);
         try {
             const response = await axiosInstance.post(
                 '/generate-questions/',
@@ -60,6 +64,8 @@ export default function LessonDetail() {
             setMcqSubmitted({});
         } catch (error) {
             console.error('Error generating questions:', error);
+        } finally {
+            setGenerating(false); //  stop loading
         }
     };
 
@@ -91,20 +97,60 @@ export default function LessonDetail() {
             {!showQuestions ? (
                 <>
                     <h1 className="text-3xl font-bold mb-6 text-blue-600">{lesson.title}</h1>
-                    <div className="text-gray-800 whitespace-pre-line leading-relaxed mb-16">
+                    <div className="text-gray-800 whitespace-pre-line leading-relaxed mb-16"
+                        style={{ fontSize: '1.2em' }}
+                    >
                         {lesson.content}
                     </div>
+                    {/* <div
+                        className="text-gray-800 leading-relaxed mb-16 prose max-w-none"
+                        dangerouslySetInnerHTML={{ __html: lesson.content }}
+                    ></div> */}
+
+
                     <button
                         onClick={handleGenerateQuestions}
-                        className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-lg"
+                        disabled={generating}
+                        className={`fixed bottom-12 right-12 text-white px-8 py-4 rounded-full shadow-lg transition duration-300 ${generating ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-700 hover:bg-blue-800'
+                            }`}
+                        style={{
+                            fontSize: '1.2rem',
+                            fontWeight: 'bold',
+                        }}
                     >
-                        Generate Questions & MCQs
+                        {generating ? (
+                            <div className="flex items-center justify-center gap-2">
+                                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                        fill="none"
+                                    />
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                    />
+                                </svg>
+                                Generating Questions...
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-3">
+                                <FaRobot className="text-white text-xl" />
+                                Practice with AI
+                            </div>
+                        )}
                     </button>
+
                 </>
             ) : (
                 <div className="bg-white p-6 rounded shadow-md">
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-bold text-blue-700">Generated Questions</h2>
+                        <h2 className="text-2xl font-bold text-blue-700">Generated Questions For You</h2>
                         <button onClick={() => setShowQuestions(false)}>
                             <FaTimes className="text-xl text-gray-600 hover:text-red-500" />
                         </button>
@@ -174,8 +220,7 @@ export default function LessonDetail() {
                                             <p className="text-green-600 flex items-center gap-2"><FaCheckCircle /> Correct</p>
                                         ) : (
                                             <p className="text-red-600 flex items-center gap-2">
-                                                <FaTimesCircle /> Incorrect. <br />
-                                                Correct Answer: <span className="font-semibold">{mcq.answer}</span>
+                                                <FaTimesCircle /> Incorrect | Correct Answer: <span className="font-semibold">{mcq.answer}</span>
                                             </p>
                                         )}
                                     </div>

@@ -3,6 +3,14 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
+import { FaUserCircle } from 'react-icons/fa';
+import { FiLogOut } from 'react-icons/fi';
+import { MdApps, MdSubscriptions } from 'react-icons/md';
+import { GiNotebook } from 'react-icons/gi';
+import { BsBoxSeam } from 'react-icons/bs';
+import { AiFillLike } from 'react-icons/ai';
+
+
 export default function Navbar() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
@@ -27,20 +35,8 @@ export default function Navbar() {
                     </button>
                 )}
 
-                {/* Nav Links */}
-                {/* <div className="flex space-x-8">
-                    <button onClick={() => navigate('/')} className="text-gray-700 hover:text-blue-600 font-semibold">
-                        All Courses
-                    </button>
-                    <button onClick={() => navigate('/subscribed')} className="text-gray-700 hover:text-blue-600 font-semibold">
-                        Subscribed
-                    </button>
-                    <button onClick={() => navigate('/recommended')} className="text-gray-700 hover:text-blue-600 font-semibold">
-                        Recommended
-                    </button>
-                </div> */}
                 {/* Navigation */}
-                <div className="flex space-x-8">
+                {/* <div className="flex space-x-8">
                     {user ? (
                         <>
                             <button onClick={() => navigate('/courses')} className="text-gray-700 hover:text-blue-600 font-semibold">
@@ -55,24 +51,51 @@ export default function Navbar() {
                         </>
                     ) : (
                         <>
-                            {/* No course links when not logged in */}
+                        </>
+                    )}
+                </div> */}
+
+                {/* Navigation Links */}
+                <div className="flex space-x-8">
+                    {user?.user?.role === 'student' && (
+                        <>
+                            <button onClick={() => navigate('/courses')} className="text-gray-700 hover:text-blue-600 font-semibold">
+                                {/* <div className="flex items-center gap-2">
+                                    <MdApps />
+                                    <span>All Courses</span>
+                                </div> */}
+                                All Courses
+                            </button>
+                            <button onClick={() => navigate('/subscribed')} className="text-gray-700 hover:text-blue-600 font-semibold">
+                                {/* <div className="flex items-center gap-2">
+                                    <MdSubscriptions />
+                                    <span>My Subscriptions</span>
+                                </div> */}
+                                My Subscriptions
+                            </button>
+                            <button onClick={() => navigate('/recommended')} className="text-gray-700 hover:text-blue-600 font-semibold">
+                                {/* <div className="flex items-center gap-2">
+                                    <AiFillLike />
+                                    <span>Recommended For You</span>
+                                </div> */}
+                                Recommended For You
+                            </button>
+                        </>
+                    )}
+
+                    {user?.user?.role === 'educator' && (
+                        <>
+                            <button onClick={() => navigate('/courses')} className="text-gray-700 hover:text-blue-600 font-semibold">
+                                All Courses
+                            </button>
+                            <button onClick={() => navigate('/add-course')} className="text-gray-700 hover:text-blue-600 font-semibold">
+                                Add New Course
+                            </button>
                         </>
                     )}
                 </div>
 
 
-                {/* Profile or Login */}
-                {/* <div>
-                    {user ? (
-                        <button onClick={handleLogout} className="text-gray-700 hover:text-red-600 font-semibold">
-                            Logout
-                        </button>
-                    ) : (
-                        <button onClick={() => navigate('/login')} className="text-gray-700 hover:text-blue-600 font-semibold">
-                            Login
-                        </button>
-                    )}
-                </div> */}
                 <div className="relative">
                     {user ? (
                         <>
@@ -80,7 +103,10 @@ export default function Navbar() {
                                 className="text-gray-700 hover:text-blue-600 font-semibold"
                                 onClick={() => setShowProfileBox(!showProfileBox)}
                             >
-                                {user.user.name}
+                                <div className="flex items-center gap-2">
+                                    <FaUserCircle />
+                                    <span>{user.user.name}</span>
+                                </div>
                             </button>
 
                             {showProfileBox && (
@@ -93,7 +119,10 @@ export default function Navbar() {
                                         className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
                                         onClick={handleLogout}
                                     >
-                                        Logout
+                                        <div className="flex items-center gap-2">
+                                            <FiLogOut />
+                                            <span>Logout</span>
+                                        </div>
                                     </button>
                                 </div>
                             )}

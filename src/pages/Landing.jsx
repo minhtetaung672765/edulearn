@@ -33,11 +33,11 @@ export default function Landing() {
             <div className="bg-blue-600 text-white py-20 text-center">
                 <h1 className="text-4xl font-bold mb-4">Welcome to EduLearn</h1>
                 <p className="text-xl">Empowering your learning journey with AI innovation.</p>
-                <img
+                {/* <img
                     src="/hero-image.jpg" // ✅ you can save image inside /public folder!
                     alt="EduLearn Hero"
                     className="mx-auto mt-8 w-2/3 rounded-lg shadow-lg"
-                />
+                /> */}
             </div>
 
             {/* Course List */}
